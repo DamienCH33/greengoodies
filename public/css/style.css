@@ -1,0 +1,12 @@
+:root {
+  /* Couleurs principales */
+  --color-primary: #FFFDF7; /*navbar + product detail + login background color + card*/
+  --color-footer: #FFFFFF; /*footer background color*/
+    --color-word-navbar: #333333; /*ecriture navbar*/
+    --color-welcome-section: #E8F0E3; /*welcome + valeur section background color*/
+    --color-conviction-section: #EBE3D3; /*conviction background color*/
+    --color-button: #565656; /*bouton + lien*/
+    --color-word: #666666; /*ecriture login*/
+    /* Font principale */
+  --font-family-primary: 'Inter', sans-serif;
+}
