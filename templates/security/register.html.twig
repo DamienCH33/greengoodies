@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription - Green Goodies
+{% endblock %}
+
+{% block body %}
+	<section class="container-fluid section-register">
+		<div
+			class="row align-items-stretch">
+
+			<!-- Image à gauche -->
+			<div class="col-md-6 p-0">
+				<img src="{{ asset('images/homepage/register.jpg') }}" alt="Produits GreenGoodies" class="img-fluid picture-register" >
+			</div>
+
+			<!-- Formulaire à droite -->
+			<div class="col-md-6 d-flex flex-column justify-content-center align-items-start px-5 py-5">
+				<h2 class="text-dark mb-1">Inscription</h2>
+				<p class="text-muted mb-4">Tous les champs sont obligatoires.</p>
+
+				{{ form_start(registrationForm, {'attr': {'class': 'w-100', 'style': 'max-width:480px;'}}) }}
+
+				<div class="mb-3">
+					{{ form_label(registrationForm.lastname, 'Nom', {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(registrationForm.lastname, {'attr': {'class': 'form-control border-dark-subtle rounded-0 py-3'}}) }}
+					{{ form_errors(registrationForm.lastname) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_label(registrationForm.firstname, 'Prénom', {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(registrationForm.firstname, {'attr': {'class': 'form-control border-dark-subtle rounded-0 py-3'}}) }}
+					{{ form_errors(registrationForm.firstname) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_label(registrationForm.email, 'Adresse email', {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(registrationForm.email, {'attr': {'class': 'form-control border-dark-subtle rounded-0 py-3'}}) }}
+					{{ form_errors(registrationForm.email) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_label(registrationForm.plainPassword.first, 'Mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'form-control border-dark-subtle rounded-0 py-3'}}) }}
+					{{ form_errors(registrationForm.plainPassword.first) }}
+				</div>
+
+				<div class="mb-4">
+					{{ form_label(registrationForm.plainPassword.second, 'Confirmation mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+					{{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'form-control border-dark-subtle rounded-0 py-3'}}) }}
+					{{ form_errors(registrationForm.plainPassword.second) }}
+				</div>
+
+				<div class="form-check mb-4">
+					{{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+					{{ form_label(registrationForm.agreeTerms, "J’accepte les CGU de GreenGoodies", {'label_attr': {'class': 'form-check-label'}}) }}
+					{{ form_errors(registrationForm.agreeTerms) }}
+				</div>
+
+				<button type="submit" class="btn btn-dark w-100 py-3 rounded-0">S’inscrire</button>
+
+				{{ form_end(registrationForm) }}
+
+				<p class="text-center mt-3 mb-0 w-100" style="max-width:480px;">
+					Déjà un compte ?
+					<a href="{{ path('app_login') }}" class="text-dark text-decoration-none">Se connecter</a>
+				</p>
+			</div>
+		</div>
+	</section>
+
+{% endblock %}
