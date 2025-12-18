@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ product.name }} - Green Goodies
+{% endblock %}
+
+{% block body %}
+<section class="section-product">
+    <div >
+        <div class="row">
+            <!-- Image produit à gauche -->
+            <div class="col-md-6 p-0">
+                <img src="{{ asset(product.picture) }}" alt="{{ product.name }}" class="img-fluid w-100">
+            </div>
+
+            <!-- Détails produit à droite -->
+            <div class="col-md-6 d-flex flex-column justify-content-center p-4">
+                <h2 class="mb-3">{{ product.name }}</h2>
+                <p class="h4 mb-4">{{ product.price | number_format(2, ',', ' ') }}€</p>
+
+                <p>Description</p>
+                <p class="mb-4">{{ product.fullDescription }}</p>
+
+                <form method="post" action="{{ path('app_cart_add', {'id': product.id}) }}" style="display:inline;">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="btn-add-cart">
+                        Ajouter au panier
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
