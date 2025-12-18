@@ -7,13 +7,16 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User implements UserInterface
+#[UniqueEntity(fields: ['email'], message: 'Il existe déjà un compte avec cet email')]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,35 +24,30 @@ class User implements UserInterface
     private ?int $id = null;
 
     #[ORM\Column(name: 'lastname', length: 50, type: Types::STRING)]
-    #[Assert\NotBlank(message: "Le nom est obligatoire")]
     private ?string $lastname = null;
 
-    #[ORM\Column(name:'fisrtname', length: 50, type: Types::STRING)]
-    #[Assert\NotBlank(message: "Le prénom est obligatoire")]
-    private ?string $fisrtname = null;
+    #[ORM\Column(name: 'firstname', length: 50, type: Types::STRING)]
+    private ?string $firstname = null;
 
-    #[ORM\Column(name:'email', length: 190, type: Types::STRING, unique: true)]
-    #[Assert\NotBlank(message: "L'email est obligatoire")]
-    #[Assert\Email(message: "L'adresse email n'est pas valide")]
+    #[ORM\Column(name: 'email', length: 190, type: Types::STRING, unique: true)]
     private ?string $email = null;
 
-    #[ORM\Column(name:'password', length: 255, type: Types::STRING)]
-    #[Assert\NotBlank(message: "Le mot de passe est obligatoire")]
-    #[Assert\Length(min: 8, minMessage: "Le mot de passe doit faire au moins {{ limit }} caractères")]
+    #[ORM\Column(name: 'password', length: 255, type: Types::STRING)]
     private ?string $password = null;
 
-    #[ORM\Column(name:'api_acces', type: Types::BOOLEAN)]
-    private ?bool $apiAcces = null;
+    #[ORM\Column(name: 'api_access', type: Types::BOOLEAN)]
+    private ?bool $apiAccess = null;
 
-    #[ORM\Column(name:'created_at', type: Types::DATETIME_MUTABLE)]
-
-    #[ORM\OneToMany(mappedBy:"user", targetEntity:Order::class, cascade:["remove"])]
-    private Collection $orders;
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_MUTABLE)]
     private ?\DateTime $createdAt = null;
+
+    #[ORM\OneToMany(mappedBy: "user", targetEntity: Order::class, cascade: ["remove"])]
+    private Collection $orders;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
-        $this->apiAcces = false;
+        $this->apiAccess = false;
         $this->orders = new ArrayCollection();
     }
     public function getId(): ?int
@@ -64,19 +62,19 @@ class User implements UserInterface
 
     public function setLastname(string $lastname): static
     {
-        $this->lastname = $lastname;
+        $this->lastname = ucfirst($lastname);
 
         return $this;
     }
 
-    public function getFisrtname(): ?string
+    public function getFirstname(): ?string
     {
-        return $this->fisrtname;
+        return $this->firstname;
     }
 
-    public function setFisrtname(string $fisrtname): static
+    public function setFirstname(string $firstname): static
     {
-        $this->fisrtname = $fisrtname;
+        $this->firstname = ucfirst($firstname);
 
         return $this;
     }
@@ -105,14 +103,14 @@ class User implements UserInterface
         return $this;
     }
 
-    public function isApiAcces(): ?bool
+    public function isApiAccess(): ?bool
     {
-        return $this->apiAcces;
+        return $this->apiAccess;
     }
 
-    public function setApiAcces(bool $apiAcces): static
+    public function setApiAccess(bool $apiAccess): static
     {
-        $this->apiAcces = $apiAcces;
+        $this->apiAccess = $apiAccess;
 
         return $this;
     }
@@ -132,10 +130,7 @@ class User implements UserInterface
     {
         return ['ROLE_USER'];
     }
-     public function eraseCredentials(): void
-    {
-      
-    }
+    public function eraseCredentials(): void {}
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
