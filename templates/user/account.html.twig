@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon compte - GreenGoodies
+{% endblock %}
+
+{% block body %}
+	<section class="section-account  py-5">
+		<div class="container">
+			<h1 class="text-center mb-5">Mon compte</h1>
+
+			{# Historique des commandes #}
+			<div class="card border-0 p-4 mb-4 shadow-sm">
+				<h5 class="mb-3 font-weight-bold">Mes commandes</h5>
+
+				{% if orders is empty %}
+					<p class="text-center text-muted">Vous n’avez encore passé aucune commande.</p>
+				{% else %}
+					<div class="table-responsive">
+						<table class="table mb-0 text-center">
+							<thead>
+								<tr class="table">
+									<th>N°</th>
+									<th>Date</th>
+									<th>Prix</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for order in orders %}
+									<tr>
+										<td>{{ order.id }}</td>
+										<td>{{ order.createdAt|date('d/m/Y') }}</td>
+										<td>{{ order.totalPrice|number_format(2, ',', ' ') }}
+											€</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				{% endif %}
+			</div>
+
+			{# Section API Access #}
+			<div class="card border-0 p-4 mb-4 text-center">
+				<h5 class="mb-3 font-weight-bold">Mon accès API</h5>
+
+				{% if app.user.apiAccess is defined and app.user.apiAccess %}
+					<form method="post" action="">
+						<button type="submit" class="btn btn-dark w-100 py-3">Désactiver mon accès API</button>
+					</form>
+				{% else %}
+					<form method="post" action="">
+						<button type="submit" class="btn btn-dark w-100 py-3">Activer mon accès API</button>
+					</form>
+				{% endif %}
+			</div>
+
+			{# Suppression de compte #}
+			<div class="card border-0 p-4 shadow-sm text-center">
+				<form method="post" action="{{ path('app_account_remove') }}">
+					<button type="submit" class="btn btn-dark w-100 py-3">
+						Supprimer mon compte
+					</button>
+				</form>
+			</div>
+		</div>
+	</section>
+{% endblock %}
