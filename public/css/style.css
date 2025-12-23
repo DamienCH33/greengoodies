@@ -1,12 +1,171 @@
 :root {
   /* Couleurs principales */
-  --color-primary: #FFFDF7; /*navbar + product detail + login background color + card*/
-  --color-footer: #FFFFFF; /*footer background color*/
-    --color-word-navbar: #333333; /*ecriture navbar*/
-    --color-welcome-section: #E8F0E3; /*welcome + valeur section background color*/
-    --color-conviction-section: #EBE3D3; /*conviction background color*/
-    --color-button: #565656; /*bouton + lien*/
-    --color-word: #666666; /*ecriture login*/
-    /* Font principale */
+  --color-primary: #FFFDF7;
+  /*navbar + product detail + login background color + card*/
+  --color-footer: #FFFFFF;
+  /*footer background color*/
+  --color-word-navbar: #333333;
+  /*ecriture navbar*/
+  --color-welcome-section: #E8F0E3;
+  /*welcome + valeur section background color*/
+  --color-conviction-section: #EBE3D3;
+  /*conviction background color*/
+  --color-button: #565656;
+  /*bouton + lien*/
+  --color-word: #666666;
+  /*ecriture login*/
+  /* Font principale */
   --font-family-primary: 'Inter', sans-serif;
+}
+
+/* navbar */
+.my-navbar {
+  background-color: var(--color-primary);
+}
+
+.nav-link {
+  color: var(--color-word-navbar);
+}
+
+/* homepage */
+.section1-welcome {
+  background-color: var(--color-welcome-section);
+}
+
+/*Section welcome homepage*/
+.my-title-welcome {
+  color: var(--color-word-navbar);
+  font-size: 64px;
+}
+.my-title {
+  display: inline-block;
+    margin-left: 100px;
+    font-size: 14px;
+}
+
+/*Section products homepage*/
+.product-card {
+   width: 480px;
+  height: 692px;
+  top: 923pxpx;
+  border-radius: 0;
+  border: none;
+}
+.card-img-top {
+  width: 480px;
+  height: 474px;
+  border-radius: 0;
+  object-fit: cover;
+}
+.card-body {
+  width: 480px;
+  height: 218px;
+  top: 474px;
+  padding-top: 40px;
+  gap: 20px;
+}
+/*Section conviction homepage*/
+.section3 {
+  background-color: var(--color-welcome-section);
+}
+.my-title-conviction {
+  color: var(--color-word-navbar);
+  font-size: 20px;
+}
+.text-conviction {
+  color: var(--color-word-navbar);
+  font-size: 14px;
+}
+/*Section value homepage*/
+.section4 {
+  background-color: var(--color-welcome-section);
+}
+.btn-details {
+  background-color: var(--color-button);
+  color: #FFFFFF;
+  font-size: 14px;
+  padding: 30px 183px 30px 183px;
+  border: none;
+  border-radius: 0;
+}
+
+.cart-container {
+    background-color: #f8f4f1;
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 800px;
+}
+
+.cart-item {
+    background-color: #fffdfc;
+    border-radius: 10px;
+}
+
+.summary-box {
+    background-color: #fffdfc;
+    border-top: 1px solid #e3dedb;
+}
+
+.btn-dark {
+    background-color: #3b3b3b;
+    border: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-dark:hover {
+    background-color: #2a2a2a;
+    transform: scale(1.02);
+}
+
+.text-muted {
+    color: #888 !important;
+}
+
+img.rounded-3 {
+    max-width: 120px;
+}
+
+
+.section-account {
+   background-color: var(--color-welcome-section);
+}
+.table {
+  color: #666666 !important;
+} 
+.text-success {
+    color: #000000 !important;
+}
+/*section register*/
+.section-register {
+  background-color: var(--color-primary);
+}
+.picture-register {
+  width: 1104px;
+  height: 734px;
+  object-fit: cover;
+}
+.form-control {
+  background-color: var(--color-primary) !important;
+}
+
+  /*section-login*/
+.section-login {
+  background-color: var(--color-primary);
+}
+
+/*footer*/
+.my-footer {
+  background-color: var(--color-footer);
+}
+
+.section-product {
+    background-color: #faf9f5;
+}
+.btn-add-cart {
+    background-color: #4f4f4f;
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 4px;
+    cursor: pointer;
 }
