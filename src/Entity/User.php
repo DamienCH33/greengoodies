@@ -41,6 +41,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: "user", targetEntity: Order::class, cascade: ["remove"])]
     private Collection $orders;
 
+    #[ORM\OneToMany(mappedBy: "user", targetEntity: Cart::class, cascade: ["remove"])]
+    private Collection $carts;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -125,7 +128,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
     public function getRoles(): array
     {
-        return ['ROLE_USER'];
+        $roles = ['ROLE_USER'];
+        return array_unique($roles);
     }
     public function eraseCredentials(): void {}
     public function getUserIdentifier(): string

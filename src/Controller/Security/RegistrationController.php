@@ -29,7 +29,7 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Votre compte a bien été créé ! Bienvenue sur GreenGoodies 🌱');
+            $this->addFlash('success', 'Votre compte a bien été créé ! Bienvenue sur GreenGoodies.');
 
             return $this->redirectToRoute('app_home');
         }

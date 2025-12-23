@@ -50,7 +50,7 @@ final class AccountController extends AbstractController
             $this->addFlash('success', 'Votre compte a été supprimé.');
         }
 
-        return $this->redirectToRoute('homepage');
+        return $this->redirectToRoute('app_home');
     }
 
     #[Route('/api-access', name: 'app_account_api_access', methods: ['POST'])]
@@ -68,10 +68,8 @@ final class AccountController extends AbstractController
             throw $this->createAccessDeniedException('Token CSRF invalide.');
         }
 
-        // Inverse l'accès API
         $user->setApiAccess(!$user->isApiAccess());
 
-        // Sauvegarde les changements
         $this->em->persist($user);
         $this->em->flush();
 

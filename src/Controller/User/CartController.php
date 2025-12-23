@@ -2,7 +2,6 @@
 
 namespace App\Controller\User;
 
-use App\Entity\Cart;
 use App\Entity\Product;
 use App\Exception\CartException;
 use App\Service\CartService;
