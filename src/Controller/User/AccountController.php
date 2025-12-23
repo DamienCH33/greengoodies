@@ -2,11 +2,13 @@
 
 namespace App\Controller\User;
 
-use App\Entity\Order;
 use App\Entity\User;
+use App\Entity\Order;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -49,5 +51,36 @@ final class AccountController extends AbstractController
         }
 
         return $this->redirectToRoute('homepage');
+    }
+
+    #[Route('/api-access', name: 'app_account_api_access', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function toggleApiAccess(Request $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            throw $this->createAccessDeniedException('Utilisateur non connecté.');
+        }
+
+        if (!$this->isCsrfTokenValid('toggle_api_access', $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
+        // Inverse l'accès API
+        $user->setApiAccess(!$user->isApiAccess());
+
+        // Sauvegarde les changements
+        $this->em->persist($user);
+        $this->em->flush();
+
+        if ($user->isApiAccess()) {
+            $this->addFlash('success', 'API activée');
+        } else {
+            $this->addFlash('success', 'API désactivée');
+        }
+
+        return $this->redirectToRoute('app_account');
     }
 }

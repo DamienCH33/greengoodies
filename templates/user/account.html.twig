@@ -29,8 +29,7 @@
 									<tr>
 										<td>{{ order.id }}</td>
 										<td>{{ order.createdAt|date('d/m/Y') }}</td>
-										<td>{{ order.totalPrice|number_format(2, ',', ' ') }}
-											€</td>
+										<td>{{ order.totalPrice|format_currency('EUR') }}</td>
 									</tr>
 								{% endfor %}
 							</tbody>
@@ -43,15 +42,17 @@
 			<div class="card border-0 p-4 mb-4 text-center">
 				<h5 class="mb-3 font-weight-bold">Mon accès API</h5>
 
-				{% if app.user.apiAccess is defined and app.user.apiAccess %}
-					<form method="post" action="">
-						<button type="submit" class="btn btn-dark w-100 py-3">Désactiver mon accès API</button>
-					</form>
-				{% else %}
-					<form method="post" action="">
-						<button type="submit" class="btn btn-dark w-100 py-3">Activer mon accès API</button>
-					</form>
-				{% endif %}
+				<form
+					method="post" action="{{ path('app_account_api_access') }}">
+					<input type="hidden" name="_token" value="{{ csrf_token('toggle_api_access') }}">
+					<button type="submit" class="btn btn-dark w-100 py-3">
+						{% if app.user.apiAccess %}
+							Désactiver mon accès API
+						{% else %}
+							Activer mon accès API
+						{% endif %}
+					</button>
+				</form>
 			</div>
 
 			{# Suppression de compte #}

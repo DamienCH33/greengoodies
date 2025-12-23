@@ -2,8 +2,9 @@
 
 namespace App\Controller\User;
 
-use App\Entity\Order;
+use App\Entity\Cart;
 use App\Entity\Product;
+use App\Exception\CartException;
 use App\Service\CartService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +36,7 @@ final class CartController extends AbstractController
         }
 
         return $this->render('user/cart.html.twig', [
-            'orderProducts' => $cart->getOrderProducts(),
+            'cartProducts' => $cart->getCartProducts(),
             'total' => $total,
         ]);
     }
@@ -69,25 +70,20 @@ final class CartController extends AbstractController
         return $this->redirectToRoute('app_cart');
     }
     
-    #[Route('/checkout', name: 'app_cart_checkout', methods: ['POST'])]
+    #[Route('/checkout', name: 'app_cart_checkout', methods: ['GET','POST'])]
     #[IsGranted('ROLE_USER')]
     public function checkout(): Response
     {
-        $user = $this->getUser();
-        $cart = $this->cartService->getCurrentCart($user);
-
-        if ($cart->getOrderProducts()->isEmpty()) {
-            $this->addFlash('warning', 'Votre panier est vide.');
+        try {
+            $this->cartService->checkout();
+        } catch (CartException $e) {
+            $this->addFlash('danger', $e->getMessage());
             return $this->redirectToRoute('app_cart');
         }
 
-        $cart->setCreatedAt(new \DateTime());
-        $this->cartService->calculateTotal($cart);
-        $this->em->flush();
-
         $this->addFlash('success', 'Votre commande a été validée.');
 
-        return $this->redirectToRoute('app_cart');
+        return $this->redirectToRoute('app_account');
     }
 
     #[Route('/remove/{id}', name: 'app_cart_remove', methods: ['POST'])]
