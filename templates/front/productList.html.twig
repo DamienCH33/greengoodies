@@ -19,8 +19,7 @@
 						<div class="card-body text-center">
 							<h5 class="card-title">{{ product.name }}</h5>
 							<p class="card-text">{{ product.shortDescription }}</p>
-							<p class="card-text">{{ product.price | number_format(2, ',', ' ') }}
-								€</p>
+							<p class="card-text">{{ product.price|format_currency('EUR') }}</p>
 							<a href="{{ path('app_product_detail', {'id': product.id}) }}" class="nav-link">Voir le produit</a>
 						</div>
 					</div>
