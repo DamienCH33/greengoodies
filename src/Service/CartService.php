@@ -2,93 +2,117 @@
 
 namespace App\Service;
 
-use App\Entity\Order;
+use App\Entity\Cart;
 use App\Entity\Product;
-use App\Entity\OrderProduct;
+use App\Entity\CartProduct;
+use App\Entity\Order;
 use App\Entity\User;
+use App\Exception\CartException;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class CartService
 {
-    public function __construct(private EntityManagerInterface $em) {}
+    public function __construct(private EntityManagerInterface $em, private Security $security) {}
 
-    public function getCurrentCart(User $user, bool $createIfMissing = true): Order
+    public function getCurrentCart(User $user, bool $createIfMissing = true): Cart
     {
-        $cart = $this->em->getRepository(Order::class)->findOneBy(['user' => $user], ['id' => 'DESC']);
+        $cart = $this->em->getRepository(Cart::class)->findOneBy(['user' => $user], ['id' => 'DESC']);
 
         if (!$cart && $createIfMissing) {
-            $cart = new Order();
+            $cart = new Cart();
             $cart->setUser($user)
                 ->setTotalPrice(0);
         }
 
         return $cart;
     }
-    public function addProduct(Order $cart, Product $product, int $quantity): void
+    public function addProduct(Cart $cart, Product $product, int $quantity): void
     {
         if (!$cart->getId()) {
             $this->em->persist($cart);
             $this->em->flush();
         }
 
-        foreach ($cart->getOrderProducts() as $orderProduct) {
-            if ($orderProduct->getProduct()->getId() === $product->getId()) {
-                $orderProduct->setQuantity($orderProduct->getQuantity() + $quantity);
-                $orderProduct->setPrice($product->getPrice());
+        foreach ($cart->getCartProducts() as $cartProduct) {
+            if ($cartProduct->getProduct()->getId() === $product->getId()) {
+                $cartProduct->setQuantity($cartProduct->getQuantity() + $quantity);
+                $cartProduct->setPrice($product->getPrice());
                 $this->calculateTotal($cart);
                 $this->em->flush();
                 return;
             }
         }
 
-        $orderProduct = new OrderProduct();
-        $orderProduct->setProduct($product)
+        $cartProduct = new CartProduct();
+        $cartProduct->setProduct($product)
             ->setQuantity($quantity)
             ->setPrice($product->getPrice())
-            ->setOrder($cart);
+            ->setCart($cart);
 
-        $cart->addOrderProduct($orderProduct);
-        $this->em->persist($orderProduct);
+        $cart->addCartProduct($cartProduct);
+        $this->em->persist($cartProduct);
         $this->calculateTotal($cart);
         $this->em->flush();
     }
-    public function calculateTotal(Order $cart): float
+    public function calculateTotal(Cart $cart): float
     {
         $total = 0;
-        foreach ($cart->getOrderProducts() as $orderProduct) {
-            $total += $orderProduct->getPrice() * $orderProduct->getQuantity();
+        foreach ($cart->getCartProducts() as $cartProduct) {
+            $total += $cartProduct->getPrice() * $cartProduct->getQuantity();
         }
         $cart->setTotalPrice($total);
 
         return $total;
     }
-    public function clearCart(Order $cart): void
+    public function clearCart(Cart $cart): void
     {
-        foreach ($cart->getOrderProducts() as $orderProduct) {
-            $this->em->remove($orderProduct);
+        foreach ($cart->getCartProducts() as $cartProduct) {
+            $this->em->remove($cartProduct);
         }
 
-        $cart->setTotalPrice(0);
+        $this->em->remove($cart);
         $this->em->flush();
     }
-    public function removeProduct(Order $cart, Product $product, int $quantity = 1): bool
+    public function removeProduct(Cart $cart, Product $product, int $quantity = 1): bool
     {
-        foreach ($cart->getOrderProducts() as $orderProduct) {
-            if ($orderProduct->getProduct()->getId() === $product->getId()) {
+        foreach ($cart->getCartProducts() as $cartProduct) {
+            if ($cartProduct->getProduct()->getId() === $product->getId()) {
 
-                if ($orderProduct->getQuantity() <= $quantity) {
-                    $cart->removeOrderProduct($orderProduct);
-                    $this->em->remove($orderProduct);
+                if ($cartProduct->getQuantity() <= $quantity) {
+                    $cart->removeCartProduct($cartProduct);
+                    $this->em->remove($cartProduct);
                     $this->calculateTotal($cart);
                     return true;
                 }
 
-                $orderProduct->setQuantity($orderProduct->getQuantity() - $quantity);
+                $cartProduct->setQuantity($cartProduct->getQuantity() - $quantity);
                 $this->calculateTotal($cart);
                 return false;
             }
         }
 
         return false;
+    }
+
+    public function checkout()
+    {
+        $user = $this->getUser();
+        $cart = $this->getCurrentCart($user);
+
+        if ($cart->getCartProducts()->isEmpty()) {
+           throw new CartException('Votre panier est vide');
+        }
+        $order = Order::createFromCart($cart);
+
+        $this->clearCart($cart);
+        
+        $this->em->persist($order);
+        $this->em->flush();
+    }
+
+    private function getUser()
+    {
+        return $this->security->getUser();
     }
 }
