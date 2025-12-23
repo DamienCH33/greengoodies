@@ -2,21 +2,23 @@
 
 namespace App\Entity;
 
-use App\Repository\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\Entity]
 class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name:'id', type: Types::INTEGER)]
+    #[Groups(['product:read'])]
     private ?int $id = null;
 
     #[ORM\Column(name:'name', length: 150, type: Types::STRING)]
     #[Assert\NotBlank(message: "Le nom du produit est obligatoire")]
+    #[Groups(['product:read'])]
     private ?string $name = null;
 
     #[ORM\Column(name:'short_description', length:255, type: Types::STRING)]
@@ -25,6 +27,7 @@ class Product
         max: 255,
         maxMessage: "La courte description ne peut pas dépasser {{ limit }} caractères"
     )]
+    #[Groups(['product:read'])]
     private ?string $shortDescription = null;
 
     #[ORM\Column(name:'full_description', type: Types::TEXT)]
@@ -34,9 +37,11 @@ class Product
     #[ORM\Column(name:'price', type: Types::FLOAT)]
     #[Assert\NotBlank(message: "Le prix est obligatoire")]
     #[Assert\Positive(message: "Le prix doit être positif")]
+    #[Groups(['product:read'])]
     private ?float $price = null;
 
     #[ORM\Column(name:'picture',length: 255, type: Types::STRING)]
+    #[Groups(['product:read'])]
     private ?string $picture = null;
 
     #[ORM\Column(name:'created_at', type: Types::DATETIME_MUTABLE)]

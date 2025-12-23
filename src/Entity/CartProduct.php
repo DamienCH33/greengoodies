@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity]
-class OrderProduct
+class CartProduct
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -19,9 +19,9 @@ class OrderProduct
     #[ORM\Column(name:'price', type: Types::FLOAT)]
     private ?float $price = null;
 
-    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy:"orderProducts")]
+    #[ORM\ManyToOne(targetEntity: Cart::class, inversedBy:"cartProducts")]
     #[ORM\JoinColumn(nullable:false, onDelete:"CASCADE")]
-    private Order $order;
+    private Cart $cart;
 
     #[ORM\ManyToOne(targetEntity: Product::class)]
     #[ORM\JoinColumn(nullable:false)]
@@ -55,14 +55,14 @@ class OrderProduct
 
         return $this;
     }
-    public function getOrder(): Order
+    public function getCart(): Cart
     {
-        return $this->order;
+        return $this->cart;
     }
 
-    public function setOrder(Order $order): self
+    public function setCart(Cart $cart): self
     {
-        $this->order = $order;
+        $this->cart = $cart;
         return $this;
     }
 

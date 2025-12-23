@@ -8,8 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity]
-#[ORM\Table(name: '`order`')]
-class Order
+#[ORM\Table(name: 'cart')]
+class Cart
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,16 +22,16 @@ class Order
     #[ORM\Column(name: 'created_at', type: Types::DATETIME_MUTABLE)]
     private ?\DateTime $createdAt = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy:"orders")]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy:"carts")]
     #[ORM\JoinColumn(nullable:false, onDelete:"CASCADE")]
     private User $user;
 
-    #[ORM\OneToMany(mappedBy:"order", targetEntity: OrderProduct::class, cascade:["persist", "remove"], orphanRemoval:true)]
-    private Collection $orderProducts;
+    #[ORM\OneToMany(mappedBy:"cart", targetEntity: CartProduct::class, cascade:["persist", "remove"], orphanRemoval:true)]
+    private Collection $cartProducts;
     public function __construct()
     {
         $this->createdAt = new \DateTime();
-        $this->orderProducts = new ArrayCollection();
+        $this->cartProducts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -71,41 +71,23 @@ class Order
 
         return $this;
     }
-    public function getOrderProducts(): Collection
+    public function getCartProducts(): Collection
     {
-        return $this->orderProducts;
+        return $this->cartProducts;
     }
-    public function addOrderProduct(OrderProduct $orderProduct): self
+    public function addCartProduct(CartProduct $cartProduct): self
     {
-        if (!$this->orderProducts->contains($orderProduct)) {
-            $this->orderProducts->add($orderProduct);
-            $orderProduct->setOrder($this);
+        if (!$this->cartProducts->contains($cartProduct)) {
+            $this->cartProducts->add($cartProduct);
+            $cartProduct->setCart($this);
         }
 
         return $this;
     }
-    public function removeOrderProduct(OrderProduct $orderProduct): self
+    public function removeCartProduct(CartProduct $cartProduct): self
     {
-        $this->orderProducts->removeElement($orderProduct);
+        $this->cartProducts->removeElement($cartProduct);
 
         return $this;
-    }
-
-    public static function createFromCart(Cart $cart): Order
-    {
-        $order = new Order();
-        $order->setUser($cart->getUser());
-        $order->setTotalPrice($cart->getTotalPrice());
-        $order->setCreatedAt(new \DateTime());
-
-        foreach ($cart->getCartProducts() as $cartProduct) {
-            $orderProduct = new OrderProduct();
-            $orderProduct->setProduct($cartProduct->getProduct());
-            $orderProduct->setQuantity($cartProduct->getQuantity());
-            $orderProduct->setPrice($cartProduct->getPrice());
-            $order->addOrderProduct($orderProduct);
-        }
-
-        return $order;
     }
 }
