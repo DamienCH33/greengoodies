@@ -31,7 +31,7 @@ class RegistrationController extends AbstractController
 
             $this->addFlash('success', 'Votre compte a bien été créé ! Bienvenue sur GreenGoodies.');
 
-            return $this->redirectToRoute('app_home');
+            return $this->redirectToRoute('app_login');
         }
         return $this->render('security/register.html.twig', [
             'registrationForm' => $form->createView(),

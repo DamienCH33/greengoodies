@@ -9,34 +9,39 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 #[Route('/account')]
+#[IsGranted('ROLE_USER')]
 final class AccountController extends AbstractController
 {
     private EntityManagerInterface $em;
-    public function __construct(EntityManagerInterface $em)
+    private TokenStorageInterface $tokenStorage;
+
+    public function __construct(EntityManagerInterface $em, TokenStorageInterface $tokenStorage)
     {
         $this->em = $em;
+        $this->tokenStorage = $tokenStorage;
     }
 
     #[Route('/', name: 'app_account')]
-    #[IsGranted('ROLE_USER')]
     public function showAccount(): Response
     {
-        $order = $this->em->getRepository(Order::class)->findBy(
+        $orders = $this->em->getRepository(Order::class)->findBy(
             ['user' => $this->getUser()],
             ['createdAt' => 'DESC']
         );
 
         return $this->render('user/account.html.twig', [
-            'orders' => $order,
+            'orders' => $orders,
         ]);
     }
+
     #[Route('/remove', name: 'app_account_remove', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
-    public function removeAccount(): Response
+    public function removeAccount(SessionInterface $session): Response
     {
         $user = $this->getUser();
 
@@ -44,8 +49,8 @@ final class AccountController extends AbstractController
             $this->em->remove($user);
             $this->em->flush();
 
-            $this->container->get('security.token_storage')->setToken(null);
-            $this->container->get('session')->invalidate();
+            $this->tokenStorage->setToken(null);
+            $session->invalidate();
 
             $this->addFlash('success', 'Votre compte a été supprimé.');
         }
@@ -54,7 +59,6 @@ final class AccountController extends AbstractController
     }
 
     #[Route('/api-access', name: 'app_account_api_access', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
     public function toggleApiAccess(Request $request): RedirectResponse
     {
         /** @var User $user */
@@ -69,15 +73,11 @@ final class AccountController extends AbstractController
         }
 
         $user->setApiAccess(!$user->isApiAccess());
-
         $this->em->persist($user);
         $this->em->flush();
 
-        if ($user->isApiAccess()) {
-            $this->addFlash('success', 'API activée');
-        } else {
-            $this->addFlash('success', 'API désactivée');
-        }
+        $message = $user->isApiAccess() ? 'API activée' : 'API désactivée';
+        $this->addFlash('success', $message);
 
         return $this->redirectToRoute('app_account');
     }
