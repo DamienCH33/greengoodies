@@ -4,74 +4,68 @@
 {% endblock %}
 
 {% block body %}
-	<section class="container my-5 cart-container">
-		<h1 class="text-center mb-4">Mon panier</h1>
+	<div class="cart-body-bg">
+		<div class="cart-container">
+			<h1>Mon panier</h1>
 
-		{% if cartProducts is empty %}
-			<p class="text-center">Votre panier est vide.</p>
-		{% else %}
-			<div class="text-start mb-3">
-				<form method="post" action="{{ path('app_cart_clear') }}" class="d-inline">
-					<button type="submit" class="btn btn-link text-decoration-none text-muted p-0">
-						<i class="bi bi-x"></i>
-						Vider le panier
-					</button>
-				</form>
-			</div>
+			{% if cartProducts is empty %}
+				<p class="empty-message">Votre panier est vide.</p>
+			{% else %}
+				<div class="empty-cart-link">
+					<form method="post" action="{{ path('app_cart_clear') }}">
+						<button type="submit">x Vider le panier</button>
+					</form>
+				</div>
 
-			{% for item in cartProducts %}
-				<div class="card mb-3 bcart-0 shadow-sm cart-item">
-					<div class="row g-0 align-items-center p-3">
-						<div class="col-md-3 text-center">
-							<img src="{{ asset(item.product.picture) }}" alt="{{ item.product.name }}" class="img-fluid rounded-3">
-						</div>
-						<div class="col-md-9">
-							<div class="card-body">
-								<h5 class="card-title fw-bold">{{ item.product.name }}</h5>
-								<p class="card-text text-muted mb-1 d-flex align-items-center">
-									<span class="me-2">Quantité :</span>
+				{% for item in cartProducts %}
+					<div class="card cart-item">
+						<div class="row g-0">
+							<div class="col-md-3">
+								<img src="{{ asset(item.product.picture) }}" alt="{{ item.product.name }}">
+							</div>
+							<div class="col-md-9">
+								<div class="card-body">
+									<h5 class="card-title">{{ item.product.name }}</h5>
+									<p class="quantity-text">
+										<span>Quantité :</span>
+										<div
+											class="d-flex align-items-center gap-2">
+											<!-- Bouton diminuer -->
+											<form method="post" action="{{ path('app_cart_remove', {id: item.product.id}) }}">
+												<input type="hidden" name="quantity" value="1">
+												<button type="submit" class="btn-quantity">–</button>
+											</form>
 
-									<!-- Bouton diminuer -->
-									<form method="post" action="{{ path('app_cart_remove', {id: item.product.id}) }}" class="d-inline">
-										<input type="hidden" name="quantity" value="1">
-										<button type="submit" class="btn btn-sm btn-outline-secondary px-2 py-0">–</button>
-									</form>
+											<!-- Quantité -->
+											<span class="quantity-number">{{ item.quantity }}</span>
 
-									<span class="mx-2 fw-semibold">{{ item.quantity }}</span>
-
-									<!-- Bouton augmenter -->
-									<form method="post" action="{{ path('app_cart_add', {id: item.product.id}) }}" class="d-inline">
-										<input type="hidden" name="quantity" value="1">
-										<button type="submit" class="btn btn-sm btn-outline-secondary px-2 py-0">+</button>
-									</form>
-								</p>
-								<p class="card-text fw-semibold fs-5">
-									{{ (item.price * item.quantity)|format_currency('EUR') }}
-									<span class="text-muted small">
-										({{ item.price|format_currency('EUR') }} prix unitaire)
-									</span>
-								</p>
+											<!-- Bouton augmenter -->
+											<form method="post" action="{{ path('app_cart_add', {id: item.product.id}) }}">
+												<input type="hidden" name="quantity" value="1">
+												<button type="submit" class="btn-quantity">+</button>
+											</form>
+										</div>
+									</p>
+									<p class="price-text">{{ (item.price * item.quantity)|format_currency('EUR') }}</p>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			{% endfor %}
+				{% endfor %}
 
-			<div class="card bcart-0 p-3 mt-4 summary-box">
-				<div class="d-flex justify-content-between align-items-center mb-2">
-					<span class="fw-semibold fs-5">Total panier :</span>
-					<span class="fw-bold fs-4">{{ total|default(0)|format_currency('EUR') }}</span>
+				<div class="card summary-box">
+					<div class="summary-row">
+						<span class="summary-label">Total panier :</span>
+						<span class="summary-amount">{{ total|default(0)|format_currency('EUR') }}</span>
+					</div>
+					<p class="shipping-info">Frais de livraison : Offert</p>
 				</div>
-				<p class="text-muted mb-0">Frais de livraison : Offert</p>
-			</div>
-
-			<div class="text-center mt-4">
-				<form method="post" action="{{ path('app_cart_checkout') }}">
-					<button type="submit" class="btn btn-dark px-5 py-2 fw-semibold">
-						Valider la commande
-					</button>
-				</form>
-			</div>
-		{% endif %}
-	</section>
+				<div class="checkout-button-wrapper justify-content-center py-4">
+					<form method="post" action="{{ path('app_cart_checkout') }}">
+						<button type="submit">Valider la commande</button>
+					</form>
+				</div>
+			{% endif %}
+		</div>
+	</div>
 {% endblock %}

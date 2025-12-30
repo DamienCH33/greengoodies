@@ -4,48 +4,44 @@
 {% endblock %}
 
 {% block body %}
-	<section class="section-account  py-5">
-		<div class="container">
-			<h1 class="text-center mb-5">Mon compte</h1>
+	<div class="account-body-bg">
+		<div class="account-container">
+			<h1>Mon compte</h1>
 
 			{# Historique des commandes #}
-			<div class="card border-0 p-4 mb-4 shadow-sm">
-				<h5 class="mb-3 font-weight-bold">Mes commandes</h5>
+			<div class="account-section">
+				<h5 class="section-title">Mes commandes</h5>
 
 				{% if orders is empty %}
-					<p class="text-center text-muted">Vous n’avez encore passé aucune commande.</p>
+					<p class="empty-orders">Vous n'avez encore passé aucune commande.</p>
 				{% else %}
-					<div class="table-responsive">
-						<table class="table mb-0 text-center">
-							<thead>
-								<tr class="table">
-									<th>N°</th>
-									<th>Date</th>
-									<th>Prix</th>
+					<table class="orders-table">
+						<thead>
+							<tr>
+								<th>N°</th>
+								<th>Date</th>
+								<th>Prix</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for order in orders %}
+								<tr>
+									<td>{{ order.id }}</td>
+									<td>{{ order.createdAt|date('d/m/Y') }}</td>
+									<td>{{ order.totalPrice|format_currency('EUR') }}</td>
 								</tr>
-							</thead>
-							<tbody>
-								{% for order in orders %}
-									<tr>
-										<td>{{ order.id }}</td>
-										<td>{{ order.createdAt|date('d/m/Y') }}</td>
-										<td>{{ order.totalPrice|format_currency('EUR') }}</td>
-									</tr>
-								{% endfor %}
-							</tbody>
-						</table>
-					</div>
+							{% endfor %}
+						</tbody>
+					</table>
 				{% endif %}
 			</div>
 
 			{# Section API Access #}
-			<div class="card border-0 p-4 mb-4 text-center">
-				<h5 class="mb-3 font-weight-bold">Mon accès API</h5>
-
-				<form
-					method="post" action="{{ path('app_account_api_access') }}">
+			<div class="account-section">
+				<h5 class="section-title">Mon accès API</h5>
+				<form method="post" action="{{ path('app_account_api_access') }}">
 					<input type="hidden" name="_token" value="{{ csrf_token('toggle_api_access') }}">
-					<button type="submit" class="btn btn-dark w-100 py-3">
+					<button type="submit" class="action-button">
 						{% if app.user.apiAccess %}
 							Désactiver mon accès API
 						{% else %}
@@ -56,13 +52,14 @@
 			</div>
 
 			{# Suppression de compte #}
-			<div class="card border-0 p-4 shadow-sm text-center">
-				<form method="post" action="{{ path('app_account_remove') }}">
-					<button type="submit" class="btn btn-dark w-100 py-3">
+			<div class="account-section">
+				<form method="post" action="{{ path('app_account_remove') }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ?');">
+					<input type="hidden" name="_token" value="{{ csrf_token('delete_account') }}">
+					<button type="submit" class="action-button delete-button">
 						Supprimer mon compte
 					</button>
 				</form>
 			</div>
 		</div>
-	</section>
+	</div>
 {% endblock %}

@@ -5,28 +5,25 @@
 {% endblock %}
 
 {% block body %}
-	<section class="container-fluid section2-categories my-5 align-items-start p-0">
-		<div class="row">
-			<div class="col-12 text-start mb-4 ">
-				<h2 class="my-title">NOS PRODUITS</h2>
-			</div>
-		</div>
-		<div class="row no-gutters">
-			{% for product in products %}
-				<div class="col-md-4">
-					<div class="card product-card h-100">
-						<img src="{{ product.picture }}" alt="{{ product.name }}" class="card-img-top img-fluid">
-						<div class="card-body text-center">
-							<h5 class="card-title">{{ product.name }}</h5>
-							<p class="card-text">{{ product.shortDescription }}</p>
-							<p class="card-text">{{ product.price|format_currency('EUR') }}</p>
-							<a href="{{ path('app_product_detail', {'id': product.id}) }}" class="nav-link">Voir le produit</a>
+	<div class="products-body-bg">
+		<div class="products-container">
+			<h2 class="products-title">NOS PRODUITS</h2>
+
+			<div class="products-grid">
+				{% for product in products %}
+					<div class="product-card">
+						<img src="{{ product.picture }}" alt="{{ product.name }}" class="product-image">
+						<div class="product-info">
+							<h5 class="product-name">{{ product.name }}</h5>
+							<p class="product-description">{{ product.shortDescription }}</p>
+							<p class="product-price">{{ product.price|format_currency('EUR') }}</p>
+							<a href="{{ path('app_product_detail', {'id': product.id}) }}" class="product-link">Voir le produit</a>
 						</div>
 					</div>
-				</div>
-			{% else %}
-				<p class="text-center">Aucun produit disponible pour le moment.</p>
-			{% endfor %}
+				{% else %}
+					<p class="no-products">Aucun produit disponible pour le moment.</p>
+				{% endfor %}
+			</div>
 		</div>
-	</section>
+	</div>
 {% endblock %}
