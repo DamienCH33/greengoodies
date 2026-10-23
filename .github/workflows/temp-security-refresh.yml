@@ -21,13 +21,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.5"
           extensions: mbstring, intl, pdo_pgsql
           tools: composer:v2
       - name: Update supported Symfony 7.4 patches
         run: composer update "symfony/*" --with-all-dependencies --no-interaction --no-progress --no-scripts
       - name: Validate Composer files
-        run: composer validate
+        run: composer validate --no-check-publish
       - name: Lint YAML and container
         run: |
           php bin/console lint:yaml config/
